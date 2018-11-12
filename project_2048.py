@@ -128,18 +128,6 @@ class game:
 			newPointer += 1
 			
 		newArray, newSum = self._combine(newArray)
-		
-		# Check if ANYTHING changed
-		array_changed = False
-		i = 0
-
-		while (i < len(array)) and not array_changed:
-			if array[i] != newArray[i]:
-				array_changed = True
-			i += 1
-
-		if not array_changed:
-			new_sum = None
 
 		return newArray, newSum
 
@@ -249,6 +237,15 @@ class game:
 		'''
 		Changes entire board, updates score. direction in (up, down, left, right)
 		'''
+		if direction not in ['up', 'down', 'left', 'right']:
+			raise ValueError('direction must be up, down, left, right')
+
+		if direction in ['up', 'down']:
+			self.swipe_vert(direction)
+		else:
+			self.swipe_horiz(direction)
+
+		self.generate_random()
 
 	def swipe_horiz(self, direction):
 		'''
@@ -262,13 +259,33 @@ class game:
 		else:
 			reverse_value = True
 
-		for idx in range(len(self.array)):
+		for idx in range(self.height):
 			old_row = self.get_row(idx, reverse_value)
 			new_row, new_sum = self._shift(old_row)
 			self.change_row(idx, new_row, reverse_value)
 
-			if new_sum not in [None, 0]:
-				self.score += new_sum
+			self.score += new_sum
+
+	def  swipe_vert(self, direction):
+		'''
+		Up or down swipes
+		'''
+		if direction not in ('up', 'down'):
+			raise ValueError('direction must be "up" or "down")')
+
+		if direction == 'up':
+			reverse_value = False
+		else:
+			reverse_value = True
+
+		for idx in range(self.width):
+			old_col = self.get_col(idx, reverse_value)
+			new_col, new_sum = self._shift(old_col)
+			self.change_col(idx, new_col, reverse_value)
+
+			self.score += new_sum
+
+	def generate_random(numbers)
 
 game_1 = game()
 print(game_1)
@@ -276,5 +293,5 @@ game_1.change_row(0, [2,4,8,16])
 print(game_1)
 game_1.change_col(2, [4, 2, 4, 16], True)
 print(game_1)
-game_1.swipe_horiz('right')
+game_1.swipe('right')
 print(game_1)
