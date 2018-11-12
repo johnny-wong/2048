@@ -7,6 +7,11 @@ Created on Wed Jul 18 19:06:31 2018
    
 
 def combine(array):
+	'''
+	Takes in an array of numbers, and assumes they are combined to the left.
+	Returns the new array and the sum of any combined numbers.
+	Assumes the 0s are already on the right. i.e. everything is already shifted.
+	'''
 	# Create a new array of the same size
 	newArray = [0] * len(array)
 	pointer = 0
@@ -17,7 +22,6 @@ def combine(array):
 		first_num = array[pointer]
 		second_num = array[pointer + 1]
 		if first_num == second_num:
-			#print('there is a match with {} and {}'.format(pointer, pointer + 1))
 			# update number in newArray
 			newArray[new_pointer] = first_num * 2
 			
@@ -27,28 +31,22 @@ def combine(array):
 			
 			# add to sum
 			new_sum += first_num * 2
-			#print('pointer = {}\nnew_pointer = {}'.format(pointer, new_pointer))
 		else:
-			#print('no match with {} and {}'.format(pointer, pointer + 1))
 			# when numbers don't match
 			newArray[new_pointer] = array[pointer]
-			
-			
+
 			# Update pointers
 			new_pointer += 1
 			pointer += 1
-			
+
 			if pointer == (len(array)-1):
-				#print('last two numbers don\'t match')
 				# Special case when it's the last two numbers
 				newArray[new_pointer] = array[pointer]
-			#print('pointer = {}\nnew_pointer = {}'.format(pointer, new_pointer))
-		
+
 	if pointer == len(array) - 1:
 		# the last number
 		newArray[new_pointer] = array[pointer]
-	#print('\n')
-		
+
 	return newArray, new_sum
 
 def test_combine():
@@ -76,11 +74,15 @@ def test_combine():
 	# Three combine
 	assert(combine([1,8,8,1,4,4,2,2,4]) == ([1,16,1,8,4,4,0,0,0], 28))
 
-	print('All tests passed!')
+	print('Combine tests passed!')
 
 test_combine()
 
 def shift(array):
+	'''
+	Shifts the array to the left and combines, returns new array and 
+	sum of any combined numbers
+	'''
 	lengthArray = len(array)
 	newArray = [0] * lengthArray
 	pointer = 0
@@ -100,6 +102,18 @@ def shift(array):
 		
 	newArray, newSum = combine(newArray)
 	
+	# Check if ANYTHING changed
+	array_changed = False
+	i = 0
+
+	while (i < len(array)) and not array_changed:
+		if array[i] != newArray[i]:
+			array_changed = True
+		i += 1
+
+	if not array_changed:
+		new_sum = None
+
 	return newArray, newSum
 
 def testShift():
@@ -121,3 +135,114 @@ def testShift():
 	print('All tests passed!')
 	
 testShift()
+
+class game:
+	def __init__(self, width=4, height=4):
+		self.array = [[0]*width for _ in range(height)]
+		self.score = 0
+		self.valid_move = True
+		self.width = width
+		self.height = height
+
+	def __repr__(self):
+		'''
+		Shows the score with the current board position.
+
+		>>> board_1 = game()
+		>>> print(game)
+		'''
+		char_width = self.width * 5 + 1 # Width of printed string
+		horiz_line = '-' * char_width # Horizontal line
+		str_score = 'Score: {}\n'.format(self.score) # Score to display
+
+		str_rep = str_score
+		str_rep += horiz_line
+		for row in self.array:
+			str_rep += '\n|'
+			for num in row:
+				str_rep += '{:^4}|'.format(num)
+			str_rep += '\n' + horiz_line
+
+		return str_rep
+
+	def __string__(self):
+		''' same as __repr__ but without calling print statement
+		>>> game_1 = game()
+		>>> game_1
+		'''
+
+		return self.__repr__()
+
+	def get_row(self, row_num, reverse=False):
+		''' Returns the row as a list. Left to right by default'''
+
+		# Checks that input is valid
+		if not (0 <= row_num < self.height):
+			raise ValueError('row_num must be between {} and {}'.format(0, self.height - 1))
+		if not isinstance(reverse, bool):
+			raise TypeError('reverse must be True or False')
+
+		if reverse:
+			row = self.array[row_num][::-1]
+		else:
+			row = self.array[row_num]
+
+		return row
+
+	def get_col(self, col_num, reverse=False):
+		''' Returns the col as a list. Top to bottom by default '''
+
+		# Checks that input is valid
+		if not (0 <= col_num < self.width):
+			raise ValueError('row_num must be between {} and {}'.format(0, self.height - 1))
+		if not isinstance(reverse, bool):
+			raise TypeError('reverse must be True or False')
+
+		col = [None] * self.height
+		
+		for row_idx, row in enumerate(self.array):
+			col[row_idx] = row[col_num]
+
+		if reverse:
+			col = col[::-1]
+
+		return col
+
+	def change_num(self, row, col, new_num):
+		''' Changes a specific number in the board '''
+		if not (0 <= row < self.height):
+			raise ValueError('row must be between {} and {}'.format(0, self.height - 1))
+		elif not (0 <= col < self.width):
+			raise ValueError('col must be between {} and {}'.format(0, self.width - 1))
+		
+		self.array[row][col] = new_num
+		return None
+
+	def change_row(self, row, new):
+		''' Changes a specific row '''
+
+		# Checks valid argument
+		if not (0 <= row < self.height):
+			raise ValueError('row must be between {} and {}'.format(0, self.height - 1))
+		elif len(new) != self.width:
+			raise ValueError('new row must be a list of length {}'.format(self.width))
+
+		self.array[row] = new
+
+	def change_col(self, col, new):
+		''' Changes a specific column '''
+		# Checks valid argument
+		if not (0 <= col < self.width):
+			raise ValueError('col must be between {} and {}'.format(0, self.width - 1))
+		elif len(new) != self.height:
+			raise ValueError('new row must be a list of length {}'.format(self.height))
+
+		for idx, row in enumerate(self.array):
+			row[col] = new[idx]
+
+game_1 = game()
+print(game_1)
+game_1.change_row(0, [2,4,8,16])
+print(game_1)
+game_1.change_col(2, [4, 4, 4, 16])
+print(game_1)
