@@ -4,50 +4,7 @@ Created on Wed Jul 18 19:06:31 2018
 
 @author: Johnny Wong
 """
-   
 
-def combine(array):
-	'''
-	Takes in an array of numbers, and assumes they are combined to the left.
-	Returns the new array and the sum of any combined numbers.
-	Assumes the 0s are already on the right. i.e. everything is already shifted.
-	'''
-	# Create a new array of the same size
-	newArray = [0] * len(array)
-	pointer = 0
-	new_pointer = 0
-	new_sum = 0
-	
-	while ((pointer < (len(array) - 1)) and (array[pointer] != 0)):
-		first_num = array[pointer]
-		second_num = array[pointer + 1]
-		if first_num == second_num:
-			# update number in newArray
-			newArray[new_pointer] = first_num * 2
-			
-			# update pointer and new_pointer
-			pointer += 2
-			new_pointer += 1
-			
-			# add to sum
-			new_sum += first_num * 2
-		else:
-			# when numbers don't match
-			newArray[new_pointer] = array[pointer]
-
-			# Update pointers
-			new_pointer += 1
-			pointer += 1
-
-			if pointer == (len(array)-1):
-				# Special case when it's the last two numbers
-				newArray[new_pointer] = array[pointer]
-
-	if pointer == len(array) - 1:
-		# the last number
-		newArray[new_pointer] = array[pointer]
-
-	return newArray, new_sum
 
 def test_combine():
 	# no change
@@ -76,46 +33,7 @@ def test_combine():
 
 	print('Combine tests passed!')
 
-test_combine()
-
-def shift(array):
-	'''
-	Shifts the array to the left and combines, returns new array and 
-	sum of any combined numbers
-	'''
-	lengthArray = len(array)
-	newArray = [0] * lengthArray
-	pointer = 0
-	newPointer = 0
-	
-	while pointer < lengthArray:
-		if array[pointer] == 0:
-			pointer += 1
-		else:
-			newArray[newPointer] = array[pointer]
-			pointer += 1
-			newPointer += 1
-
-	while newPointer < lengthArray:
-		newArray[newPointer] = 0
-		newPointer += 1
-		
-	newArray, newSum = combine(newArray)
-	
-	# Check if ANYTHING changed
-	array_changed = False
-	i = 0
-
-	while (i < len(array)) and not array_changed:
-		if array[i] != newArray[i]:
-			array_changed = True
-		i += 1
-
-	if not array_changed:
-		new_sum = None
-
-	return newArray, newSum
-
+# test_combine()
 def testShift():
 	# no combine
 	assert(shift([0, 0, 0, 1, 2, 4]) == ([1, 2, 4, 0, 0, 0], 0))
@@ -134,7 +52,7 @@ def testShift():
 	
 	print('All tests passed!')
 	
-testShift()
+# testShift()
 
 class game:
 	def __init__(self, width=4, height=4):
@@ -143,6 +61,87 @@ class game:
 		self.valid_move = True
 		self.width = width
 		self.height = height
+
+	def _combine(self, array):
+		'''
+		Takes in an array of numbers, and assumes they are combined to the left.
+		Returns the new array and the sum of any combined numbers.
+		Assumes the 0s are already on the right. i.e. everything is already shifted.
+		'''
+		# Create a new array of the same size
+		newArray = [0] * len(array)
+		pointer = 0
+		new_pointer = 0
+		new_sum = 0
+		
+		while ((pointer < (len(array) - 1)) and (array[pointer] != 0)):
+			first_num = array[pointer]
+			second_num = array[pointer + 1]
+			if first_num == second_num:
+				# update number in newArray
+				newArray[new_pointer] = first_num * 2
+				
+				# update pointer and new_pointer
+				pointer += 2
+				new_pointer += 1
+				
+				# add to sum
+				new_sum += first_num * 2
+			else:
+				# when numbers don't match
+				newArray[new_pointer] = array[pointer]
+
+				# Update pointers
+				new_pointer += 1
+				pointer += 1
+
+				if pointer == (len(array)-1):
+					# Special case when it's the last two numbers
+					newArray[new_pointer] = array[pointer]
+
+		if pointer == len(array) - 1:
+			# the last number
+			newArray[new_pointer] = array[pointer]
+
+		return newArray, new_sum
+
+	def _shift(self, array):
+		'''
+		Shifts the array to the left and combines, returns new array and 
+		sum of any combined numbers
+		'''
+		lengthArray = len(array)
+		newArray = [0] * lengthArray
+		pointer = 0
+		newPointer = 0
+		
+		while pointer < lengthArray:
+			if array[pointer] == 0:
+				pointer += 1
+			else:
+				newArray[newPointer] = array[pointer]
+				pointer += 1
+				newPointer += 1
+
+		while newPointer < lengthArray:
+			newArray[newPointer] = 0
+			newPointer += 1
+			
+		newArray, newSum = self._combine(newArray)
+		
+		# Check if ANYTHING changed
+		array_changed = False
+		i = 0
+
+		while (i < len(array)) and not array_changed:
+			if array[i] != newArray[i]:
+				array_changed = True
+			i += 1
+
+		if not array_changed:
+			new_sum = None
+
+		return newArray, newSum
 
 	def __repr__(self):
 		'''
@@ -218,7 +217,7 @@ class game:
 		self.array[row][col] = new_num
 		return None
 
-	def change_row(self, row, new):
+	def change_row(self, row, new, reverse=False):
 		''' Changes a specific row '''
 
 		# Checks valid argument
@@ -227,9 +226,12 @@ class game:
 		elif len(new) != self.width:
 			raise ValueError('new row must be a list of length {}'.format(self.width))
 
+		if reverse:
+			new = new[::-1]
+
 		self.array[row] = new
 
-	def change_col(self, col, new):
+	def change_col(self, col, new, reverse=False):
 		''' Changes a specific column '''
 		# Checks valid argument
 		if not (0 <= col < self.width):
@@ -237,12 +239,42 @@ class game:
 		elif len(new) != self.height:
 			raise ValueError('new row must be a list of length {}'.format(self.height))
 
+		if reverse:
+			new = new[::-1]
+		
 		for idx, row in enumerate(self.array):
 			row[col] = new[idx]
+
+	def swipe(self, direction):
+		'''
+		Changes entire board, updates score. direction in (up, down, left, right)
+		'''
+
+	def swipe_horiz(self, direction):
+		'''
+		Left or right swipes
+		'''
+		if direction not in ('left', 'right'):
+			raise ValueError('direction must be "left" or "right")')
+
+		if direction == 'left':
+			reverse_value = False
+		else:
+			reverse_value = True
+
+		for idx in range(len(self.array)):
+			old_row = self.get_row(idx, reverse_value)
+			new_row, new_sum = self._shift(old_row)
+			self.change_row(idx, new_row, reverse_value)
+
+			if new_sum not in [None, 0]:
+				self.score += new_sum
 
 game_1 = game()
 print(game_1)
 game_1.change_row(0, [2,4,8,16])
 print(game_1)
-game_1.change_col(2, [4, 4, 4, 16])
+game_1.change_col(2, [4, 2, 4, 16], True)
+print(game_1)
+game_1.swipe_horiz('right')
 print(game_1)
