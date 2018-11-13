@@ -47,5 +47,8 @@ class TestSwipes(unittest.TestCase):
 		# three combine
 		self.assertEqual(game_1._shift([1, 1, 1, 1, 1, 1]), ([2, 2, 2, 0, 0, 0], 6))
 
+class TestEndgame(unittest.TestCase):
+	def test_no_moves(self):
+		game1 = Game()
 if __name__ == '__main__':
     unittest.main()
