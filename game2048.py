@@ -9,11 +9,15 @@ import random
 
 class Game:
 	def __init__(self, width=4, height=4):
-		self.array = [[0]*width for _ in range(height)]
+		self.array = [[0] * width for _ in range(height)]
 		self.score = 0
 		self.playing = True
 		self.width = width
 		self.height = height
+		self.valid_up = True
+		self.valid_down = True
+		self.valid_left = True
+		self.valid_right = True
 
 		# Generate 2 numbers randomly to start
 		self.generate_random()
@@ -287,14 +291,97 @@ class Game:
 		return count, empty_coords
 
 	def get_next_move(self):
+		''' Get the user's input. Will ignore any unrecognised commands'''
 		valid_moves = ['up', 'down', 'left', 'right', 'quit']
 		next_move = None
 		while next_move not in valid_moves:
 			next_move = input('What is your next move? (up, down, left, right, quit)\n')
 
 		return next_move
+
 	def start_game(self):
 		print(self)
 		while self.playing == True:
 			next_move = self.get_next_move()
 			self.swipe(next_move)
+
+	def update_valid_moves(self):
+		''' Update what the available moves are from the current position'''
+		# If same number, can move in either direction
+		# If blank space, can only move in direction towards blank space
+
+	def valid_moves_combine(self):
+		''' Checks whether a move is valid due to being able to combine with 
+		adjacent tile. Returns a tuple with the up, down, left, right validity'''
+
+		# Only need to check to the right and down 1, so only check for the upper left
+		horiz_valid = False
+		vert_valid = False
+
+		# row and column indexes
+		row = 0
+		col = 0
+
+		while (not (horiz_valid and vert_valid)) and (row < self.height - 1):
+			col = 0
+			while (not (horiz_valid and vert_valid)) and (col < self.width - 1):
+				tile_value = self.array[row][col]
+
+				if not horiz_valid:
+					right_tile = self.array[row][col + 1]
+					if tile_value == right_tile:
+						horiz_valid = True
+				
+				if not vert_valid:
+					down_tile = self.array[row + 1][col]
+					if tile_value == down_tile:
+						vert_valid = True
+
+				col += 1
+			row += 1
+
+		up_valid = vert_valid
+		down_valid = vert_valid
+		left_valid = horiz_valid
+		right_valid = horiz_valid
+
+		return up_valid, down_valid, left_valid, right_valid
+
+	def valid_moves_shift(self):
+		''' Checks whether a move is valid due to being able to shift. 
+		Returns a tuple with the up, down, left, right validity'''
+		num_empty, empty_coords = self.count_empty()
+
+		up_valid = False
+		down_valid = False
+		left_valid = False
+		right_valid = False
+
+		if num_empty == 0:
+			return False, False, False, False
+		else:
+			for coord in empty_coords:
+				x = coord[0]
+				y = coord[1]
+
+				if not up_valid:
+					if y < self.height - 1:
+						up_valid = True
+
+				if not down_valid:
+					if y > 0:
+						down_valid = True
+
+				if not left_valid:
+					if x < self.width - 1:
+						left_valid = True
+
+				if not right_valid:
+					if x > 0:
+						right_valid = True
+
+				if up_valid and down_valid and left_valid and right_valid:
+					break
+
+		return up_valid, down_valid, left_valid, right_valid
+				
