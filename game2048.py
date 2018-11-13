@@ -23,7 +23,6 @@ class Game:
 		self.generate_random()
 		self.generate_random()
 
-
 	def _combine(self, array):
 		'''
 		Takes in an array of numbers, and assumes they are combined to the left.
@@ -112,6 +111,7 @@ class Game:
 				str_rep += '{:^4}|'.format(num)
 			str_rep += '\n' + horiz_line
 
+		str_rep += '\n'
 		return str_rep
 
 	def __string__(self):
@@ -385,3 +385,7 @@ class Game:
 
 		return up_valid, down_valid, left_valid, right_valid
 				
+if __name__ == '__main__':
+
+	game_1 = Game()
+	game_1.start_game()
