@@ -48,7 +48,167 @@ class TestSwipes(unittest.TestCase):
 		self.assertEqual(game_1._shift([1, 1, 1, 1, 1, 1]), ([2, 2, 2, 0, 0, 0], 6))
 
 class TestEndgame(unittest.TestCase):
-	def test_no_moves(self):
-		game1 = Game()
+	def test_no_moves_shift(self):
+		''' Tests move shift validity'''
+		# No empty spaces to move at all
+		game_1 = game2048.Game()
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_shift(), (False, False, False, False))
+		
+		# One empty space in corner
+		game_1.change_row(0, [0, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_shift(), (True, False, True, False))
+
+		# One empty space on edge
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [0, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_shift(), (True, True, True, False))
+
+		# One empty space in centre
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 0, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_shift(), (True, True, True, True))
+
+	def test_no_move_combine(self):
+		''' Test moves for combine validity'''
+		game_1 = game2048.Game()
+
+		# Nothing to combine
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (False, False, False, False))
+
+		# Something to combine but have to shift
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 0, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (False, False, False, False))
+
+		# Combine vertically
+		game_1.change_row(0, [2, 8, 2, 4])
+		game_1.change_row(1, [4, 8, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (True, True, False, False))
+
+		# Combine horizontally
+		game_1.change_row(0, [2, 8, 8, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (False, False, True, True))
+
+		# Combine both ways
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 4, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (True, True, True, True))
+
+	def test_overall_valid(self):
+		game_1 = game2048.Game()
+
+		# Invalid everywhere
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (False, False, False, False))
+
+		# Valid vertical
+		game_1.change_row(0, [8, 4, 2, 4])
+		game_1.change_row(1, [8, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, True, False, False))
+
+		# Valid horizontal
+		game_1.change_row(0, [8, 8, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (False, False, True, True))
+
+		# Valid everywhere
+		game_1.change_row(0, [8, 8, 2, 4])
+		game_1.change_row(1, [4, 4, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, True, True, True))		
+
+		# Valid right up only
+		game_1.change_row(0, [2, 4, 2, 0])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, False, False, True))
+
+		# Valid down left only
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [0, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (False, True, True, False))
+
+		# Not valid up
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 0, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (False, True, True, True))
+
+		# Not valid down
+		game_1.change_row(0, [2, 4, 0, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, False, True, True))
+
+		# Not valid left
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 0])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, True, False, True))
+
+		# Not valid right
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [0, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, True, True, False))
+
 if __name__ == '__main__':
     unittest.main()

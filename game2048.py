@@ -14,15 +14,14 @@ class Game:
 		self.playing = True
 		self.width = width
 		self.height = height
-		self.valid_up = True
-		self.valid_down = True
-		self.valid_left = True
-		self.valid_right = True
+		# Up, down, left, right move validity
+		self.valid_udlr = (True, True, True, True)
 
 		# Generate 2 numbers randomly to start
 		self.generate_random()
 		self.generate_random()
 
+		self.update_valid_moves()
 	def _combine(self, array):
 		'''
 		Takes in an array of numbers, and assumes they are combined to the left.
@@ -307,8 +306,13 @@ class Game:
 
 	def update_valid_moves(self):
 		''' Update what the available moves are from the current position'''
-		# If same number, can move in either direction
-		# If blank space, can only move in direction towards blank space
+		shift_valid = self.valid_moves_shift()
+		combine_valid = self.valid_moves_combine()
+
+		valid_overall = tuple(shift or combine for shift, combine in zip(
+			shift_valid, combine_valid))
+
+		self.valid_udlr = valid_overall
 
 	def valid_moves_combine(self):
 		''' Checks whether a move is valid due to being able to combine with 
@@ -361,23 +365,23 @@ class Game:
 			return False, False, False, False
 		else:
 			for coord in empty_coords:
-				x = coord[0]
-				y = coord[1]
+				row = coord[0]
+				col = coord[1]
 
 				if not up_valid:
-					if y < self.height - 1:
+					if row < self.height - 1:
 						up_valid = True
 
 				if not down_valid:
-					if y > 0:
+					if row > 0:
 						down_valid = True
 
 				if not left_valid:
-					if x < self.width - 1:
+					if col < self.width - 1:
 						left_valid = True
 
 				if not right_valid:
-					if x > 0:
+					if col > 0:
 						right_valid = True
 
 				if up_valid and down_valid and left_valid and right_valid:
@@ -388,4 +392,5 @@ class Game:
 if __name__ == '__main__':
 
 	game_1 = Game()
-	game_1.start_game()
+	print(dir(game_1))	
+	# game_1.start_game()
