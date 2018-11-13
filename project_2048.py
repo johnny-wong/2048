@@ -5,6 +5,7 @@ Created on Wed Jul 18 19:06:31 2018
 @author: Johnny Wong
 """
 
+import random
 
 def test_combine():
 	# no change
@@ -58,9 +59,14 @@ class game:
 	def __init__(self, width=4, height=4):
 		self.array = [[0]*width for _ in range(height)]
 		self.score = 0
-		self.valid_move = True
+		self.playing = True
 		self.width = width
 		self.height = height
+
+		# Generate 2 numbers randomly to start
+		self.generate_random()
+		self.generate_random()
+
 
 	def _combine(self, array):
 		'''
@@ -203,7 +209,6 @@ class game:
 			raise ValueError('col must be between {} and {}'.format(0, self.width - 1))
 		
 		self.array[row][col] = new_num
-		return None
 
 	def change_row(self, row, new, reverse=False):
 		''' Changes a specific row '''
@@ -235,17 +240,25 @@ class game:
 
 	def swipe(self, direction):
 		'''
-		Changes entire board, updates score. direction in (up, down, left, right)
+		Changes entire board, updates score. direction in (up, down, left, right, quit)
 		'''
-		if direction not in ['up', 'down', 'left', 'right']:
+		if direction not in ['up', 'down', 'left', 'right', 'quit']:
 			raise ValueError('direction must be up, down, left, right')
+
 
 		if direction in ['up', 'down']:
 			self.swipe_vert(direction)
-		else:
+		elif direction in ['left', 'right']:
 			self.swipe_horiz(direction)
 
-		self.generate_random()
+		if (self.generate_random() == 'End') or (direction == 'quit'):
+			self.playing = False
+			print('GAME OVER, final score: {}'.format(self.score))
+			print(self)
+
+			return None
+
+		print(self)
 
 	def swipe_horiz(self, direction):
 		'''
@@ -266,7 +279,7 @@ class game:
 
 			self.score += new_sum
 
-	def  swipe_vert(self, direction):
+	def swipe_vert(self, direction):
 		'''
 		Up or down swipes
 		'''
@@ -285,13 +298,53 @@ class game:
 
 			self.score += new_sum
 
-	def generate_random(numbers)
+	def generate_random(self):
+		'''
+		Randomly generates a 2 or 4 and puts it in a random empty space. 
+		If no spaces available, returns the string 'end'
+		'''
+		num_empty, empty_coords = self.count_empty()
 
-game_1 = game()
-print(game_1)
-game_1.change_row(0, [2,4,8,16])
-print(game_1)
-game_1.change_col(2, [4, 2, 4, 16], True)
-print(game_1)
-game_1.swipe('right')
-print(game_1)
+		if num_empty == 0:
+			return 'End'
+
+		if random.random() < 0.2:
+			new_num = 4
+		else:
+			new_num = 2
+		
+		placement = random.randint(0, num_empty-1)
+
+		row, col = empty_coords[placement]
+
+		self.change_num(row, col, new_num) 
+
+	def count_empty(self):
+		'''
+		Count the number of empty places on the board. Returns the number of 
+		empty spaces and a list of the coordinates of those empty spaces.
+		'''
+		empty_coords = []
+		count = 0
+		for row_idx, row in enumerate(self.array):
+			for col_idx, num in enumerate(row):
+				if num == 0:
+					count += 1
+					empty_coords.append((row_idx, col_idx))
+
+		return count, empty_coords
+
+	def get_next_move(self):
+		valid_moves = ['up', 'down', 'left', 'right', 'quit']
+		next_move = None
+		while next_move not in valid_moves:
+			next_move = input('What is your next move? (up, down, left, right, quit)\n')
+
+		return next_move
+	def start_game(self):
+		print(self)
+		while self.playing == True:
+			next_move = self.get_next_move()
+			self.swipe(next_move)
+game_2 = game()
+game_2.start_game()
