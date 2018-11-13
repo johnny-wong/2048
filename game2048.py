@@ -19,7 +19,6 @@ class Game:
 		self.generate_random()
 		self.generate_random()
 
-
 	def _combine(self, array):
 		'''
 		Takes in an array of numbers, and assumes they are combined to the left.
@@ -108,6 +107,7 @@ class Game:
 				str_rep += '{:^4}|'.format(num)
 			str_rep += '\n' + horiz_line
 
+		str_rep += '\n'
 		return str_rep
 
 	def __string__(self):
@@ -293,8 +293,14 @@ class Game:
 			next_move = input('What is your next move? (up, down, left, right, quit)\n')
 
 		return next_move
+	
 	def start_game(self):
 		print(self)
 		while self.playing == True:
 			next_move = self.get_next_move()
 			self.swipe(next_move)
+
+if __name__ == '__main__':
+
+	game_1 = Game()
+	game_1.start_game()
