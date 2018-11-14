@@ -6,6 +6,7 @@ Created on Wed Jul 18 19:06:31 2018
 """
 
 import random
+import os
 
 class Game:
 	def __init__(self, width=4, height=4):
@@ -263,7 +264,7 @@ class Game:
 		if num_empty == 0:
 			return 'End'
 
-		if random.random() < 0.2:
+		if random.random() < 0.1:
 			new_num = 4
 		else:
 			new_num = 2
@@ -309,6 +310,7 @@ class Game:
 		print(self)
 		while self.playing == True:
 			next_move = self.get_next_move()
+			os.system('class')
 			self.swipe(next_move)
 
 	def update_valid_moves(self):
@@ -400,9 +402,11 @@ class Game:
 	
 	def end_game(self):
 		''' Prints end game message'''
+		os.system('cls')
 		print('GAME OVER, final score: {}'.format(self.score))
 		self.playing = False
 		print(self)
+
 
 if __name__ == '__main__':
 
