@@ -83,6 +83,16 @@ class TestValid(unittest.TestCase):
 
 		self.assertEqual(game_1.valid_moves_shift(), (True, True, True, True))
 
+		# From issue #3
+		
+		game_2 = game2048.Game(width=3, height=2)
+		game_2.change_row(0, [0, 0, 2])
+		game_2.change_row(1, [0, 2, 4])
+
+		game_2.update_valid_moves()
+		self.assertEqual(game_2.valid_moves_shift, (True, False, True, False))
+
+
 	def test_combine(self):
 		''' Test moves for combine validity'''
 		game_1 = game2048.Game()
@@ -143,6 +153,15 @@ class TestValid(unittest.TestCase):
 		game_1.change_row(3, [4, 8, 8, 2])
 
 		self.assertEqual(game_1.valid_moves_combine(), (False, False, True, True))
+
+		# From issue #3
+		game_2 = game2048.Game(width=3, height=2)
+		game_2.change_row(0, [0, 0, 2])
+		game_2.change_row(1, [0, 2, 4])
+
+		game_2.update_valid_moves()
+		self.assertEqual(game_1.valid_moves_combine, (False, False, False, False))
+	
 	def test_overall_valid(self):
 		game_1 = game2048.Game()
 
@@ -225,6 +244,14 @@ class TestValid(unittest.TestCase):
 		game_1.change_row(3, [4, 2, 4, 2])
 		game_1.update_valid_moves()
 		self.assertEqual(game_1.valid_udlr, (True, True, True, False))
+
+		# Related to issue #3
+		game_2 = game2048.Game(width=3, height=2)
+		game_2.change_row(0, [0, 0, 2])
+		game_2.change_row(1, [0, 2, 4])
+
+		game_2.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, False, True, False))
 
 if __name__ == '__main__':
     unittest.main()

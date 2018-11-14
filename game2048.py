@@ -311,7 +311,7 @@ class Game:
 		print(self)
 		while self.playing == True:
 			next_move = self.get_next_move()
-			os.system('class')
+			os.system('cls')
 			self.swipe(next_move)
 
 	def update_valid_moves(self):
