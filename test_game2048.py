@@ -47,8 +47,8 @@ class TestSwipes(unittest.TestCase):
 		# three combine
 		self.assertEqual(game_1._shift([1, 1, 1, 1, 1, 1]), ([2, 2, 2, 0, 0, 0], 6))
 
-class TestEndgame(unittest.TestCase):
-	def test_no_moves_shift(self):
+class TestValid(unittest.TestCase):
+	def test_shift(self):
 		''' Tests move shift validity'''
 		# No empty spaces to move at all
 		game_1 = game2048.Game()
@@ -83,7 +83,7 @@ class TestEndgame(unittest.TestCase):
 
 		self.assertEqual(game_1.valid_moves_shift(), (True, True, True, True))
 
-	def test_no_move_combine(self):
+	def test_combine(self):
 		''' Test moves for combine validity'''
 		game_1 = game2048.Game()
 
@@ -127,6 +127,22 @@ class TestEndgame(unittest.TestCase):
 
 		self.assertEqual(game_1.valid_moves_combine(), (True, True, True, True))
 
+		# Response to issue #2, test validity cases on last row and col
+		# Combine vertically on last column
+		game_1.change_row(0, [2, 4, 2, 8])
+		game_1.change_row(1, [4, 2, 4, 8])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 2, 4, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (True, True, False, False))
+
+		# Combine horizontally on last row
+		game_1.change_row(0, [2, 4, 2, 4])
+		game_1.change_row(1, [4, 2, 4, 2])
+		game_1.change_row(2, [2, 4, 2, 4])
+		game_1.change_row(3, [4, 8, 8, 2])
+
+		self.assertEqual(game_1.valid_moves_combine(), (False, False, True, True))
 	def test_overall_valid(self):
 		game_1 = game2048.Game()
 

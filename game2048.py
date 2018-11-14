@@ -22,6 +22,7 @@ class Game:
 		self.generate_random()
 
 		self.update_valid_moves()
+
 	def _combine(self, array):
 		'''
 		Takes in an array of numbers, and assumes they are combined to the left.
@@ -332,17 +333,19 @@ class Game:
 		row = 0
 		col = 0
 
-		while (not (horiz_valid and vert_valid)) and (row < self.height - 1):
+		while (not (horiz_valid and vert_valid)) and (row < self.height):
 			col = 0
-			while (not (horiz_valid and vert_valid)) and (col < self.width - 1):
+			while (not (horiz_valid and vert_valid)) and (col < self.width):
 				tile_value = self.array[row][col]
 
-				if not horiz_valid:
+				if ((not horiz_valid) and 
+					(col != self.width - 1)): # Can't/don't need to check last col
 					right_tile = self.array[row][col + 1]
 					if tile_value == right_tile:
 						horiz_valid = True
 				
-				if not vert_valid:
+				if ((not vert_valid) and 
+					(row != self.height - 1)): # Can't/don't need to check last row
 					down_tile = self.array[row + 1][col]
 					if tile_value == down_tile:
 						vert_valid = True
@@ -403,5 +406,5 @@ class Game:
 
 if __name__ == '__main__':
 
-	game_1 = Game()
+	game_1 = Game(width=3, height=2)
 	game_1.start_game()
