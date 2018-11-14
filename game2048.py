@@ -7,6 +7,7 @@ Created on Wed Jul 18 19:06:31 2018
 
 import random
 import os
+from pyfiglet import figlet_format
 
 class Game:
 	def __init__(self, width=4, height=4):
@@ -403,7 +404,7 @@ class Game:
 	def end_game(self):
 		''' Prints end game message'''
 		os.system('cls')
-		print('GAME OVER, final score: {}'.format(self.score))
+		print(figlet_format('Game Over'))
 		self.playing = False
 		print(self)
 
