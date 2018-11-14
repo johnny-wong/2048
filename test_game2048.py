@@ -160,7 +160,7 @@ class TestValid(unittest.TestCase):
 		game_2.change_row(1, [0, 2, 4])
 
 		game_2.update_valid_moves()
-		self.assertEqual(game_1.valid_moves_combine, (False, False, False, False))
+		self.assertEqual(game_2.valid_moves_combine(), (False, False, False, False))
 	
 	def test_overall_valid(self):
 		game_1 = game2048.Game()

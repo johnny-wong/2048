@@ -344,13 +344,13 @@ class Game:
 				if ((not horiz_valid) and 
 					(col != self.width - 1)): # Can't/don't need to check last col
 					right_tile = self.array[row][col + 1]
-					if tile_value == right_tile:
+					if (tile_value == right_tile) and (tile_value != 0):
 						horiz_valid = True
 				
 				if ((not vert_valid) and 
 					(row != self.height - 1)): # Can't/don't need to check last row
 					down_tile = self.array[row + 1][col]
-					if tile_value == down_tile:
+					if (tile_value == down_tile) and (tile_value != 0):
 						vert_valid = True
 
 				col += 1
