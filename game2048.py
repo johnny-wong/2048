@@ -198,20 +198,19 @@ class Game:
 		Changes entire board, updates score. direction in (up, down, left, right, quit)
 		'''
 		if direction not in ['up', 'down', 'left', 'right', 'quit']:
-			raise ValueError('direction must be up, down, left, right')
+			raise ValueError('direction must be up, down, left, right, quit')
 
 
-		if direction in ['up', 'down']:
+		if direction == 'quit':
+			self.end_game()
+			return None
+		elif direction in ['up', 'down']:
 			self.swipe_vert(direction)
 		elif direction in ['left', 'right']:
 			self.swipe_horiz(direction)
 
-		if (self.generate_random() == 'End') or (direction == 'quit'):
-			self.playing = False
-			print('GAME OVER, final score: {}'.format(self.score))
-			print(self)
-
-			return None
+		self.generate_random()
+		self.update_valid_moves()
 
 		print(self)
 
@@ -291,9 +290,16 @@ class Game:
 
 	def get_next_move(self):
 		''' Get the user's input. Will ignore any unrecognised commands'''
-		valid_moves = ['up', 'down', 'left', 'right', 'quit']
+		possible_moves = ('up', 'down', 'left', 'right')
+		valid_moves = [direction for direction, valid in zip(possible_moves, 
+			self.valid_udlr) if valid]
+
+		if len(valid_moves) == 0:
+			# No more valid moves
+			return 'quit'
+
 		next_move = None
-		while next_move not in valid_moves:
+		while (next_move not in valid_moves) and (next_move != 'quit'):
 			next_move = input('What is your next move? (up, down, left, right, quit)\n')
 
 		return next_move
@@ -388,9 +394,14 @@ class Game:
 					break
 
 		return up_valid, down_valid, left_valid, right_valid
-				
+	
+	def end_game(self):
+		''' Prints end game message'''
+		print('GAME OVER, final score: {}'.format(self.score))
+		self.playing = False
+		print(self)
+
 if __name__ == '__main__':
 
 	game_1 = Game()
-	print(dir(game_1))	
-	# game_1.start_game()
+	game_1.start_game()
