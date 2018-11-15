@@ -140,5 +140,18 @@ class TestValid(unittest.TestCase):
 		game_2.update_valid_moves()
 		self.assertEqual(game_2.valid_udlr, (True, False, True, False))
 
+		game_2.change_row(0, [4, 0, 0])
+		game_2.change_row(1, [8, 0, 4])
+
+		game_2.update_valid_moves()
+		self.assertEqual(game_2.valid_udlr, (True, False, True, True))
+
+		game_3 = game2048.Game(width=2, height=2)
+		game_3.change_row(0, [0, 0])
+		game_3.change_row(1, [2, 4])
+
+		game_3.update_valid_moves()
+		self.assertEqual(game_3.valid_udlr, (True, False, False, False))
+
 if __name__ == '__main__':
     unittest.main()
