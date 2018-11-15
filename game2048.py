@@ -373,6 +373,21 @@ class Game:
 		left_valid = False
 		right_valid = False
 
+		empty_cols = []
+		empty_rows = []
+
+		for row_idx in range(self.height):
+			row = self.get_row(row_idx)
+			if (all([num == 0 for num in row])):
+				# Empty row
+				empty_rows.append(row_idx)
+
+		for col_idx in range(self.width):
+			col = self.get_col(col_idx)
+			if (all([num == 0 for num in col])):
+				# Empty col
+				empty_cols.append(col_idx)
+
 		if num_empty == 0:
 			return False, False, False, False
 		else:
@@ -380,22 +395,22 @@ class Game:
 				row = coord[0]
 				col = coord[1]
 
-				if not up_valid:
+				if (not up_valid) and (col not in empty_cols):
 					if row < self.height - 1:
 						up_valid = True
-
-				if not down_valid:
+						print('up valid because of row {} col {}'.format(row, col))
+				if (not down_valid) and (col not in empty_cols):
 					if row > 0:
 						down_valid = True
-
-				if not left_valid:
+						print('down valid because of row {} col {}'.format(row, col))
+				if (not left_valid) and (row not in empty_rows):
 					if col < self.width - 1:
 						left_valid = True
-
-				if not right_valid:
+						print('left valid because of row {} col {}'.format(row, col))
+				if (not right_valid) and (row not in empty_rows):
 					if col > 0:
 						right_valid = True
-
+						print('right valid because of row {} col {}'.format(row, col))
 				if up_valid and down_valid and left_valid and right_valid:
 					break
 
@@ -411,5 +426,9 @@ class Game:
 
 if __name__ == '__main__':
 
-	game_1 = Game(width=3, height=2)
-	game_1.start_game()
+	game_2 = Game(width=3, height=2)
+	game_2.change_row(0, [0, 0, 2])
+	game_2.change_row(1, [0, 2, 4])
+
+	game_2.update_valid_moves()
+	print(game_2.valid_udlr)
