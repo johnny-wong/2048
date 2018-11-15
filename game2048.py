@@ -385,7 +385,6 @@ class Game:
 		self.playing = False
 		print(self)
 
-
 if __name__ == '__main__':
 
 	game_2 = Game(width=3, height=2)
