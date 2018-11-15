@@ -48,120 +48,7 @@ class TestSwipes(unittest.TestCase):
 		self.assertEqual(game_1._shift([1, 1, 1, 1, 1, 1]), ([2, 2, 2, 0, 0, 0], 6))
 
 class TestValid(unittest.TestCase):
-	def test_shift(self):
-		''' Tests move shift validity'''
-		# No empty spaces to move at all
-		game_1 = game2048.Game()
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [4, 2, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
 
-		self.assertEqual(game_1.valid_moves_shift(), (False, False, False, False))
-		
-		# One empty space in corner
-		game_1.change_row(0, [0, 4, 2, 4])
-		game_1.change_row(1, [4, 2, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_shift(), (True, False, True, False))
-
-		# One empty space on edge
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [0, 2, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_shift(), (True, True, True, False))
-
-		# One empty space in centre
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [4, 0, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_shift(), (True, True, True, True))
-
-		# From issue #3
-		
-		game_2 = game2048.Game(width=3, height=2)
-		game_2.change_row(0, [0, 0, 2])
-		game_2.change_row(1, [0, 2, 4])
-
-		game_2.update_valid_moves()
-		self.assertEqual(game_2.valid_moves_shift, (True, False, True, False))
-
-
-	def test_combine(self):
-		''' Test moves for combine validity'''
-		game_1 = game2048.Game()
-
-		# Nothing to combine
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [4, 2, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (False, False, False, False))
-
-		# Something to combine but have to shift
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [4, 0, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (False, False, False, False))
-
-		# Combine vertically
-		game_1.change_row(0, [2, 8, 2, 4])
-		game_1.change_row(1, [4, 8, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (True, True, False, False))
-
-		# Combine horizontally
-		game_1.change_row(0, [2, 8, 8, 4])
-		game_1.change_row(1, [4, 2, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (False, False, True, True))
-
-		# Combine both ways
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [4, 4, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (True, True, True, True))
-
-		# Response to issue #2, test validity cases on last row and col
-		# Combine vertically on last column
-		game_1.change_row(0, [2, 4, 2, 8])
-		game_1.change_row(1, [4, 2, 4, 8])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 2, 4, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (True, True, False, False))
-
-		# Combine horizontally on last row
-		game_1.change_row(0, [2, 4, 2, 4])
-		game_1.change_row(1, [4, 2, 4, 2])
-		game_1.change_row(2, [2, 4, 2, 4])
-		game_1.change_row(3, [4, 8, 8, 2])
-
-		self.assertEqual(game_1.valid_moves_combine(), (False, False, True, True))
-
-		# From issue #3
-		game_2 = game2048.Game(width=3, height=2)
-		game_2.change_row(0, [0, 0, 2])
-		game_2.change_row(1, [0, 2, 4])
-
-		game_2.update_valid_moves()
-		self.assertEqual(game_2.valid_moves_combine(), (False, False, False, False))
-	
 	def test_overall_valid(self):
 		game_1 = game2048.Game()
 
@@ -251,7 +138,7 @@ class TestValid(unittest.TestCase):
 		game_2.change_row(1, [0, 2, 4])
 
 		game_2.update_valid_moves()
-		self.assertEqual(game_1.valid_udlr, (True, False, True, False))
+		self.assertEqual(game_2.valid_udlr, (True, False, True, False))
 
 if __name__ == '__main__':
     unittest.main()

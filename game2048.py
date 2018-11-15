@@ -316,105 +316,67 @@ class Game:
 
 	def update_valid_moves(self):
 		''' Update what the available moves are from the current position'''
-		shift_valid = self.valid_moves_shift()
-		combine_valid = self.valid_moves_combine()
-
-		valid_overall = tuple(shift or combine for shift, combine in zip(
-			shift_valid, combine_valid))
-
-		self.valid_udlr = valid_overall
-
-	def valid_moves_combine(self):
-		''' Checks whether a move is valid due to being able to combine with 
-		adjacent tile. Returns a tuple with the up, down, left, right validity'''
-
-		# Only need to check to the right and down 1, so only check for the upper left
-		horiz_valid = False
-		vert_valid = False
-
-		# row and column indexes
-		row = 0
-		col = 0
-
-		while (not (horiz_valid and vert_valid)) and (row < self.height):
-			col = 0
-			while (not (horiz_valid and vert_valid)) and (col < self.width):
-				tile_value = self.array[row][col]
-
-				if ((not horiz_valid) and 
-					(col != self.width - 1)): # Can't/don't need to check last col
-					right_tile = self.array[row][col + 1]
-					if (tile_value == right_tile) and (tile_value != 0):
-						horiz_valid = True
-				
-				if ((not vert_valid) and 
-					(row != self.height - 1)): # Can't/don't need to check last row
-					down_tile = self.array[row + 1][col]
-					if (tile_value == down_tile) and (tile_value != 0):
-						vert_valid = True
-
-				col += 1
-			row += 1
-
-		up_valid = vert_valid
-		down_valid = vert_valid
-		left_valid = horiz_valid
-		right_valid = horiz_valid
-
-		return up_valid, down_valid, left_valid, right_valid
-
-	def valid_moves_shift(self):
-		''' Checks whether a move is valid due to being able to shift. 
-		Returns a tuple with the up, down, left, right validity'''
-		num_empty, empty_coords = self.count_empty()
-
-		up_valid = False
-		down_valid = False
-		left_valid = False
-		right_valid = False
-
-		empty_cols = []
-		empty_rows = []
-
+		up_valid, down_valid, left_valid, right_valid = (False, False, False, False)
 		for row_idx in range(self.height):
-			row = self.get_row(row_idx)
-			if (all([num == 0 for num in row])):
-				# Empty row
-				empty_rows.append(row_idx)
+			for col_idx in range(self.width):
+				
 
-		for col_idx in range(self.width):
-			col = self.get_col(col_idx)
-			if (all([num == 0 for num in col])):
-				# Empty col
-				empty_cols.append(col_idx)
-
-		if num_empty == 0:
-			return False, False, False, False
-		else:
-			for coord in empty_coords:
-				row = coord[0]
-				col = coord[1]
-
-				if (not up_valid) and (col not in empty_cols):
-					if row < self.height - 1:
-						up_valid = True
-						print('up valid because of row {} col {}'.format(row, col))
-				if (not down_valid) and (col not in empty_cols):
-					if row > 0:
-						down_valid = True
-						print('down valid because of row {} col {}'.format(row, col))
-				if (not left_valid) and (row not in empty_rows):
-					if col < self.width - 1:
-						left_valid = True
-						print('left valid because of row {} col {}'.format(row, col))
-				if (not right_valid) and (row not in empty_rows):
-					if col > 0:
-						right_valid = True
-						print('right valid because of row {} col {}'.format(row, col))
 				if up_valid and down_valid and left_valid and right_valid:
 					break
+				else:
+					tile = self.array[row_idx][col_idx]
+					if tile == 0:
+						# Nothing to compare to
+						continue
 
-		return up_valid, down_valid, left_valid, right_valid
+					# Compare the 4 directions
+					if not right_valid:
+						if col_idx == self.width - 1:
+							# Last column, can't compare to right
+							pass
+						else:
+							right_tile = self.array[row_idx][col_idx + 1]
+							if tile == right_tile:
+								# Same non zero number
+								left_valid = True
+								right_valid = True
+							elif right_tile == 0:
+								right_valid = True
+
+					if not left_valid:
+						if col_idx == 0:
+							# First column, can't compare to left
+							pass
+						else:
+							left_tile = self.array[row_idx][col_idx - 1]
+							# Don't need to check if left == right as already checked 
+							if left_tile == 0:
+								left_valid = True
+
+					if not down_valid:
+						if row_idx == self.height - 1:
+							# Last row, can't compare down
+							pass
+						else:
+							down_tile = self.array[row_idx + 1][col_idx]
+							if tile == down_tile:
+								# Same non zero number
+								up_valid = True
+								down_valid = True
+							elif down_tile == 0:
+								down_valid = True
+
+					if not up_valid:
+						if row_idx == 0:
+							# First row, can't compare up
+							pass
+						else:
+							up_tile = self.array[row_idx - 1][col_idx]
+							# Don't need to check if up == down as already checked
+							if up_tile == 0:
+								up_valid = True
+
+		self.valid_udlr = (up_valid, down_valid, left_valid, right_valid)
 	
 	def end_game(self):
 		''' Prints end game message'''
