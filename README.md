@@ -1,6 +1,7 @@
 # 2048
 
 Language: Python3
+
 Author: Johnny Wong
 
 ## Introduction
@@ -26,6 +27,6 @@ Played on cmd terminal. Will need to first import the game2048 file, then initia
     What is your next move? ['up', 'down', 'left', 'right', 'quit']
 
 
-<img src = "images/mid_game_screenshot" >
+<img src = "images/mid_game_screenshot.PNG" >
 
-<img src = "images/end_game_screenshot" >
+<img src = "images/end_game_screenshot.PNG" >
