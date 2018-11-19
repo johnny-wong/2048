@@ -132,6 +132,13 @@ class TestValid(unittest.TestCase):
 		game_1.update_valid_moves()
 		self.assertEqual(game_1.valid_udlr, (True, True, True, False))
 
+		# Issue
+		game_1.change_row(0, [0, 0, 0, 0])
+		game_1.change_row(1, [2, 0, 0, 0])
+		game_1.change_row(2, [4, 2, 4, 0])
+		game_1.change_row(3, [128, 64, 16, 16])
+		game_1.update_valid_moves()
+		self.assertEqual(game_1.valid_udlr, (True, False, True, True))
 		# Related to issue #3
 		game_2 = game2048.Game(width=3, height=2)
 		game_2.change_row(0, [0, 0, 2])

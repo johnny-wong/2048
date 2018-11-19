@@ -10,12 +10,19 @@ import os
 from pyfiglet import figlet_format
 
 class Game:
-	def __init__(self, width=4, height=4):
+	def __init__(self, width=4, height=4, 
+		up='up', down='down', left='left', right='right'):
 		self.array = [[0] * width for _ in range(height)]
 		self.score = 0
 		self.playing = True
 		self.width = width
 		self.height = height
+		self.move_commands = {
+			up: 'up',
+			down: 'down',
+			left: 'left',
+			right: 'right'
+		}
 		# Up, down, left, right move validity
 		self.valid_udlr = (True, True, True, True)
 
@@ -303,8 +310,16 @@ class Game:
 
 		next_move = None
 		while (next_move not in valid_moves) and (next_move != 'quit'):
-			next_move = input('What is your next move? (up, down, left, right, quit)\n')
-
+			command = input('What is your next move? {}\n'.format(
+				list(self.move_commands.keys()) + ['quit']))
+			if command != 'quit':
+				try:
+					next_move = self.move_commands[command]
+				except:
+					# Invalid command
+					continue
+			else:
+				next_move = 'quit'
 		return next_move
 
 	def start_game(self):
@@ -319,7 +334,6 @@ class Game:
 		up_valid, down_valid, left_valid, right_valid = (False, False, False, False)
 		for row_idx in range(self.height):
 			for col_idx in range(self.width):
-				
 
 				if up_valid and down_valid and left_valid and right_valid:
 					break
@@ -349,8 +363,11 @@ class Game:
 							pass
 						else:
 							left_tile = self.array[row_idx][col_idx - 1]
-							# Don't need to check if left == right as already checked 
-							if left_tile == 0:
+							if tile == left_tile:
+								# Same non zero number
+								left_valid = True
+								right_valid = True
+							elif left_tile == 0:
 								left_valid = True
 
 					if not down_valid:
@@ -372,8 +389,11 @@ class Game:
 							pass
 						else:
 							up_tile = self.array[row_idx - 1][col_idx]
-							# Don't need to check if up == down as already checked
-							if up_tile == 0:
+							if tile == up_tile:
+								# Same non zero number
+								up_valid = True
+								down_valie = True
+							elif up_tile == 0:
 								up_valid = True
 
 		self.valid_udlr = (up_valid, down_valid, left_valid, right_valid)
@@ -386,10 +406,5 @@ class Game:
 		print(self)
 
 if __name__ == '__main__':
-
-	game_2 = Game(width=3, height=2)
-	game_2.change_row(0, [0, 0, 2])
-	game_2.change_row(1, [0, 2, 4])
-
-	game_2.update_valid_moves()
-	print(game_2.valid_udlr)
+	game_1 = Game(up='w', down='s', left='a', right='d', height=3, width=3)
+	game_1.start_game()
