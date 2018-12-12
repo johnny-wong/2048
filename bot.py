@@ -40,10 +40,32 @@ class RandomBot:
 
 		return choice
 
+class RuleBot:
+	def __init__(self, game):
+		if not isinstance(game, game2048.Game):
+			raise TypeError('game must be of type Game defined in game2048.py')
+
+		self.game = game
+	
+	def decide_move(self):
+		''' Returns up, down, left, right '''
+		valid_moves = self.game.get_valid_moves()
+		preference = ['right', 'down', 'left', 'up']
+
+		if len(valid_moves) == 0:
+			return 'quit'
+
+		for direction in preference:
+			if direction in valid_moves:
+				choice = direction
+				break
+
+		return choice
+
 
 game_1 = game2048.Game()
-random_bot = RandomBot(game_1)
 
-bot_player = BotPlayer(game_1, random_bot)
+rule_bot = RuleBot(game_1)
+bot_player = BotPlayer(game_1, rule_bot)
 bot_player.play()
 print(bot_player.get_game())
