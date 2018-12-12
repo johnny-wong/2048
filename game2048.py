@@ -11,7 +11,7 @@ from pyfiglet import figlet_format
 
 class Game:
 	def __init__(self, width=4, height=4, 
-		up='up', down='down', left='left', right='right'):
+		up='w', down='s', left='a', right='d'):
 		self.array = [[0] * width for _ in range(height)]
 		self.score = 0
 		self.playing = True
@@ -222,8 +222,6 @@ class Game:
 		self.generate_random()
 		self.update_valid_moves()
 
-		print(self)
-
 	def swipe_horiz(self, direction):
 		'''
 		Left or right swipes
@@ -328,6 +326,7 @@ class Game:
 			next_move = self.get_next_move()
 			os.system('cls')
 			self.swipe(next_move)
+			print(self)
 
 	def update_valid_moves(self):
 		''' Update what the available moves are from the current position'''
@@ -403,8 +402,19 @@ class Game:
 		os.system('cls')
 		print(figlet_format('Game Over'))
 		self.playing = False
-		print(self)
+
+	def get_valid_moves(self):
+		''' Returns a list of all valid moves '''
+		possible_moves = ['up', 'down', 'left', 'right']
+		valid_boolean = self.valid_udlr
+		valid_moves = [move for move, valid in zip(possible_moves, 
+			valid_boolean) if valid]
+		return valid_moves
+
+	def get_playing(self):
+		return self.playing
 
 if __name__ == '__main__':
-	game_1 = Game(up='w', down='s', left='a', right='d', height=3, width=3)
-	game_1.start_game()
+	game_1 = Game(up='w', down='s', left='a', right='d', height=4, width=3)
+	print(type(game_1))
+	print(isinstance(game_1, Game))
