@@ -419,7 +419,10 @@ class Game:
     def get_playing(self):
         return self.playing
 
-if __name__ == '__main__':
-    game_1 = Game(up='w', down='s', left='a', right='d', height=4, width=3)
-    print(type(game_1))
-    print(isinstance(game_1, Game))
+    def get_score(self):
+        return self.score
+
+# if __name__ == '__main__':
+#     game_1 = Game(up='w', down='s', left='a', right='d', height=4, width=3)
+#     print(type(game_1))
+#     print(isinstance(game_1, Game))
