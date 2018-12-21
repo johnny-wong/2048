@@ -11,7 +11,7 @@ from pyfiglet import figlet_format
 
 class Game:
 	def __init__(self, width=4, height=4, 
-		up='w', down='s', left='a', right='d'):
+		up='w', down='s', left='a', right='d', print_end_msg=True):
 		self.array = [[0] * width for _ in range(height)]
 		self.score = 0
 		self.playing = True
@@ -23,8 +23,12 @@ class Game:
 			left: 'left',
 			right: 'right'
 		}
+
 		# Up, down, left, right move validity
 		self.valid_udlr = (True, True, True, True)
+
+        # Whether to show GAME OVER message
+        self.print_end_msg = print_end_msg
 
 		# Generate 2 numbers randomly to start
 		self.generate_random()
@@ -397,10 +401,11 @@ class Game:
 
 		self.valid_udlr = (up_valid, down_valid, left_valid, right_valid)
 	
-	def end_game(self):
+	def end_game(self, print_msg=True):
 		''' Prints end game message'''
 		os.system('cls')
-		print(figlet_format('Game Over'))
+        if self.print_end_msg:
+		  print(figlet_format('Game Over'))
 		self.playing = False
 
 	def get_valid_moves(self):
