@@ -17,8 +17,6 @@ class BotPlayer:
             move = self.bot.decide_move()
             self.bot.game.swipe(move)
 
-        return self.bot.game
-
     def get_game(self):
         return self.game
 
